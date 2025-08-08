@@ -9,7 +9,7 @@ public class ArrayList<T> implements List<T> {
     private int size;
     private Object[] elements = new Object[DEFAULT_CAPACITY];
 
-    private void growIfNeeded() {
+    private void grow() {
         Object[] newElements = new Object[(int) (elements.length * GROWTH_FACTOR)];
         System.arraycopy(elements, 0, newElements, 0, elements.length);
         elements = newElements;
@@ -23,10 +23,17 @@ public class ArrayList<T> implements List<T> {
         return removedElement;
     }
 
+    private void checkIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new ArrayListIndexOutOfBoundsException("index: "
+                    + index + " out of collection size");
+        }
+    }
+
     @Override
     public void add(T value) {
         if (size == elements.length) {
-            growIfNeeded();
+            grow();
         }
         elements[size++] = value;
     }
@@ -34,10 +41,11 @@ public class ArrayList<T> implements List<T> {
     @Override
     public void add(T value, int index) {
         if (index < 0 || index > size) {
-            throw new ArrayListIndexOutOfBoundsException("index out of size");
+            throw new ArrayListIndexOutOfBoundsException("index: "
+                    + index + " out of collection size");
         }
         if (size == elements.length) {
-            growIfNeeded();
+            grow();
         }
         System.arraycopy(elements, index, elements, index + 1, size - index);
         elements[index] = value;
@@ -46,37 +54,29 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public void addAll(List<T> list) {
+        while (this.size + list.size() > elements.length) {
+            grow();
+        }
         for (int i = 0; i < list.size(); i++) {
-            if (size == elements.length) {
-                growIfNeeded();
-            }
             elements[size++] = list.get(i);
         }
     }
 
     @Override
     public T get(int index) {
-        if (index < 0 || index >= size) {
-            throw new ArrayListIndexOutOfBoundsException("index: "
-                    + index + "out of size: " + size);
-        }
+        checkIndex(index);
         return (T) elements[index];
     }
 
     @Override
     public void set(T value, int index) {
-        if (index < 0 || index >= size) {
-            throw new ArrayListIndexOutOfBoundsException("index: "
-                    + index + " out of collection size");
-        }
+        checkIndex(index);
         elements[index] = value;
     }
 
     @Override
     public T remove(int index) {
-        if (index < 0 || index >= size) {
-            throw new ArrayListIndexOutOfBoundsException("no elements at index: " + index);
-        }
+        checkIndex(index);
         return removeValue(index);
     }
 
