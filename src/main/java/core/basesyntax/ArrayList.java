@@ -30,7 +30,6 @@ public class ArrayList<T> implements List<T> {
         elements = newElements;
     }
 
-
     private T removeValue(int index) {
         T removedElement = (T) elements[index];
         int valuesAfter = size - index - 1;
