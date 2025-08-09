@@ -15,6 +15,22 @@ public class ArrayList<T> implements List<T> {
         elements = newElements;
     }
 
+    private void grow(int minCapacity) {
+        int oldCapacity = elements.length;
+        if (minCapacity <= oldCapacity) {
+            return;
+        }
+        int newCapacity = (int) Math.ceil(
+                oldCapacity * Math.pow(GROWTH_FACTOR,
+                        Math.ceil(Math.log((double) minCapacity
+                        / oldCapacity) / Math.log(GROWTH_FACTOR)))
+        );
+        Object[] newElements = new Object[newCapacity];
+        System.arraycopy(elements, 0, newElements, 0, size);
+        elements = newElements;
+    }
+
+
     private T removeValue(int index) {
         T removedElement = (T) elements[index];
         int valuesAfter = size - index - 1;
@@ -54,9 +70,8 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public void addAll(List<T> list) {
-        while (this.size + list.size() > elements.length) {
-            grow();
-        }
+        int requiredCapacity = size + list.size();
+        grow(requiredCapacity);
         for (int i = 0; i < list.size(); i++) {
             elements[size++] = list.get(i);
         }
